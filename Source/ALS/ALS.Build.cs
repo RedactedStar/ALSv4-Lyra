@@ -9,6 +9,11 @@ public class ALS : ModuleRules
 
 		bEnableNonInlinedGenCppWarnings = true;
 
+	        PublicDependencyModuleNames.AddRange(new[]
+	        {
+		        "ModularGameplayActors"
+	        });
+        
 		PrivateDependencyModuleNames.AddRange(new[]
 		{
 			"Core", "CoreUObject", "Engine", "NetCore", "PhysicsCore", "GameplayTags", "AnimGraphRuntime", "RigVM", "ControlRig", "Niagara"
