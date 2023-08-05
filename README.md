@@ -16,6 +16,9 @@ The main purpose of this ALS version is is a complete and high-quality refactori
 ### Lyra Setup !!
 - [x] Enable Tick on `ALyraCharacter`
 
+#### Installing
+`git submodule add https://github.com/RemainingToast/ALS4Lyra.git Plugins/ALS`
+
 ## Features
 
 - Refactored plugin structure. Content is now separated into 3 categories: `ALS` - main content, `ALSCamera` - camera-related content and `ALSExtras` - other optional content
