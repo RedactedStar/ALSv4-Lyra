@@ -6,6 +6,19 @@ Completely reworked and improved С++ version of [Advanced Locomotion System V4]
 
 The main purpose of this ALS version is is a complete and high-quality refactoring of every aspect of the plugin, so that it becomes easier to understand, more flexible, reliable (especially in network multiplayer), performant, and simply more pleasant to work with.
 
+## Lyra Compatability
+- [ ] Added `LyraGame` Dependency.
+- [ ] Added `GAS` Dependency.
+- [ ] Added Retargeting Rigs `AnimMan Skeleton (UE4) <-> Manny Skeleton (UE5)`.
+- [ ] `AALSBaseCharacter` now inherits `ALyraCharacter`.
+- [ ] `UALSCharacterMovementComponent` now inherits `ULyraCharacterMovementComponent`.
+
+### Lyra Setup !!
+- [x] Enable Tick on `ALyraCharacter`
+
+#### Installing
+`git submodule add https://github.com/RemainingToast/ALS4Lyra.git Plugins/ALS`
+
 ## Features
 
 - Refactored plugin structure. Content is now separated into 3 categories: `ALS` - main content, `ALSCamera` - camera-related content and `ALSExtras` - other optional content
