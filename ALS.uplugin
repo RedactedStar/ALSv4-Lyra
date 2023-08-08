@@ -20,22 +20,50 @@
 		{
 			"Name": "ALS",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"AIModule",
+				"GameplayTasks",
+				"GameplayTags",
+				"GameplayAbilities",
+				"LyraGame"
+			]
 		},
 		{
 			"Name": "ALSCamera",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"AIModule",
+				"GameplayTasks",
+				"GameplayTags",
+				"GameplayAbilities",
+				"LyraGame"
+			]
 		},
 		{
 			"Name": "ALSExtras",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"AIModule",
+				"GameplayTasks",
+				"GameplayTags",
+				"GameplayAbilities",
+				"LyraGame"
+			]
 		},
 		{
 			"Name": "ALSEditor",
 			"Type": "UncookedOnly",
-			"LoadingPhase": "PreDefault"
+			"LoadingPhase": "PreDefault",
+			"AdditionalDependencies": [
+				"AIModule",
+				"GameplayTasks",
+				"GameplayTags",
+				"GameplayAbilities",
+				"LyraGame"
+			]
 		}
 	],
 	"Plugins": [
@@ -65,6 +93,10 @@
 		},
 		{
 			"Name": "PropertyAccessNode",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayAbilities",
 			"Enabled": true
 		}
 	]

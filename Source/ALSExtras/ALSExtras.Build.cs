@@ -9,6 +9,11 @@ public class ALSExtras : ModuleRules
 
 		bEnableNonInlinedGenCppWarnings = true;
 
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"LyraGame", "AIModule", "GameplayTags", "GameplayAbilities"
+		});
+		
 		PrivateDependencyModuleNames.AddRange(new[]
 		{
 			"Core", "CoreUObject", "Engine", "EnhancedInput", "GameplayTags", "AIModule", "ALS", "ALSCamera"

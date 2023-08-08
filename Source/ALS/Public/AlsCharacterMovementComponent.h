@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Character/LyraCharacterMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Settings/AlsMovementSettings.h"
 #include "AlsCharacterMovementComponent.generated.h"
@@ -71,13 +72,15 @@ public:
 };
 
 UCLASS()
-class ALS_API UAlsCharacterMovementComponent : public UCharacterMovementComponent
+class ALS_API UAlsCharacterMovementComponent : public ULyraCharacterMovementComponent
 {
 	GENERATED_BODY()
 
 	friend FAlsSavedMove;
 
 protected:
+	UAlsCharacterMovementComponent(const FObjectInitializer& ObjectInitializer);
+	
 	FAlsCharacterNetworkMoveDataContainer MoveDataContainer;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State", Transient)

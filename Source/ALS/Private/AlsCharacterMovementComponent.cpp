@@ -117,7 +117,7 @@ FSavedMovePtr FAlsNetworkPredictionData::AllocateNewMove()
 	return MakeShared<FAlsSavedMove>();
 }
 
-UAlsCharacterMovementComponent::UAlsCharacterMovementComponent()
+UAlsCharacterMovementComponent::UAlsCharacterMovementComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	SetNetworkMoveDataContainer(MoveDataContainer);
 
