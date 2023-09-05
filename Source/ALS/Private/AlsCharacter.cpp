@@ -17,6 +17,8 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(AlsCharacter)
 
+static FName NAME_AlsCharacterCollisionProfile_Mesh(TEXT("AlsPawnMesh"));
+
 namespace AlsCharacterConstants
 {
 	constexpr auto TeleportDistanceThresholdSquared{FMath::Square(50.0f)};
@@ -31,6 +33,8 @@ AAlsCharacter::AAlsCharacter(const FObjectInitializer& ObjectInitializer) : Supe
 	bUseControllerRotationYaw = false;
 	bClientCheckEncroachmentOnNetUpdate = true; // Required for bSimGravityDisabled to be updated.
 
+	GetMesh()->SetCollisionProfileName(NAME_AlsCharacterCollisionProfile_Mesh);
+	
 	GetCapsuleComponent()->InitCapsuleSize(30.0f, 90.0f);
 
 	GetMesh()->SetRelativeLocation_Direct({0.0f, 0.0f, -92.0f});
