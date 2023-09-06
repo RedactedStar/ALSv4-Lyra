@@ -199,6 +199,7 @@ void AAlsCharacterExample::Input_OnSwitchShoulder()
 	Camera->SetRightShoulder(!Camera->IsRightShoulder());
 }
 
+
 void AAlsCharacterExample::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DisplayInfo, float& Unused, float& VerticalLocation)
 {
 	if (Camera->IsActive())
