@@ -11,7 +11,7 @@ public class ALSExtras : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
-			"LyraGame", "AIModule", "GameplayTags", "GameplayAbilities"
+			"LyraGame", "AIModule", "GameplayTags", "GameplayAbilities", "ModularGameplay"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new[]

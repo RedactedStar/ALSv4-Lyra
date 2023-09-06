@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 13,
 	"VersionName": "4.12",
-	"FriendlyName": "Advanced Locomotion System Refactored",
+	"FriendlyName": "ALSCore",
 	"Description": "Completely reworked and improved version of the Community Version of Advanced Locomotion System V4.",
 	"Category": "Animation",
 	"CreatedBy": "Sixze",
@@ -10,12 +10,13 @@
 	"DocsURL": "https://github.com/Sixze/ALS-Refactored",
 	"MarketplaceURL": "https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1",
 	"SupportURL": "https://github.com/Sixze/ALS-Refactored/discussions",
-	"EngineVersion": "5.2.0",
-	"EnabledByDefault": true,
 	"CanContainContent": true,
-	"IsBetaVersion": false,
+	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
+	"ExplicitlyLoaded": true,
+	"EnabledByDefault": true,
+	"BuiltInInitialFeatureState": "Registered",
 	"Modules": [
 		{
 			"Name": "ALS",
@@ -101,6 +102,14 @@
 		},
 		{
 			"Name": "ShooterCore",
+			"Enabled": true
+		},
+		{
+			"Name": "GameFeatures",
+			"Enabled": true
+		},
+		{
+			"Name": "ModularGameplay",
 			"Enabled": true
 		}
 	]
