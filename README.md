@@ -24,7 +24,7 @@ The main purpose of this ALS version is is a complete and high-quality refactori
 ### Fresh Lyra Setup
   1. Enable Tick on `ALyraCharacter`
   2. Write Setup...
-     - (Likely will make a video tutorial will get linked here)
+     - (Likely will make a video tutorial that will get linked here)
 
 #### Installing
 `git submodule add https://github.com/RemainingToast/ALS4Lyra.git Plugins/GameFeatures/ALS`
