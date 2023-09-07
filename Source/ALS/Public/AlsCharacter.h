@@ -18,6 +18,8 @@ class UAlsMovementSettings;
 class UAlsAnimationInstance;
 class UAlsMantlingSettings;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRagdollEnded);
+
 UCLASS(AutoExpandCategories = ("Settings|Als Character", "Settings|Als Character|Desired State", "State|Als Character"))
 class ALS_API AAlsCharacter : public ALyraCharacter
 {
@@ -100,6 +102,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient)
 	FAlsRagdollingState RagdollingState;
+
+	UPROPERTY(BlueprintAssignable, Category = "State|Als Character")
+	FOnRagdollEnded OnRagdollEnded;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient)
 	FAlsRollingState RollingState;

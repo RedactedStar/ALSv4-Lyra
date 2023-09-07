@@ -786,7 +786,7 @@ void AAlsCharacter::RefreshRagdollingActorTransform(const float DeltaTime)
 
 bool AAlsCharacter::IsRagdollingAllowedToStop() const
 {
-	return LocomotionAction == AlsLocomotionActionTags::Ragdolling;
+	return LocomotionAction == AlsLocomotionActionTags::Ragdolling && RagdollingState.bGrounded;
 }
 
 bool AAlsCharacter::TryStopRagdolling()
@@ -865,6 +865,8 @@ void AAlsCharacter::StopRagdollingImplementation()
 
 	SetLocomotionAction(FGameplayTag::EmptyTag);
 
+	OnRagdollEnded.Broadcast();
+
 	OnRagdollingEnded();
 
 	if (RagdollingState.bGrounded &&
@@ -891,6 +893,8 @@ void AAlsCharacter::FinalizeRagdolling()
 	GetMesh()->SetCollisionObjectType(ECC_Pawn);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	// TODO: re-attach capsule in c++?
 }
 
 UAnimMontage* AAlsCharacter::SelectGetUpMontage_Implementation(const bool bRagdollFacedUpward)

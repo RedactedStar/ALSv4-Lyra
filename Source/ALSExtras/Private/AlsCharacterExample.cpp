@@ -17,29 +17,31 @@ AAlsCharacterExample::AAlsCharacterExample()
 
 void AAlsCharacterExample::NotifyControllerChanged()
 {
-	const auto* PreviousPlayer{Cast<APlayerController>(PreviousController)};
-	if (IsValid(PreviousPlayer))
-	{
-		auto* InputSubsystem{ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PreviousPlayer->GetLocalPlayer())};
-		if (IsValid(InputSubsystem))
-		{
-			InputSubsystem->RemoveMappingContext(InputMappingContext);
-		}
-	}
-
-	auto* NewPlayer{Cast<APlayerController>(GetController())};
-	if (IsValid(NewPlayer))
-	{
-		NewPlayer->InputYawScale_DEPRECATED = 1.0f;
-		NewPlayer->InputPitchScale_DEPRECATED = 1.0f;
-		NewPlayer->InputRollScale_DEPRECATED = 1.0f;
-
-		auto* InputSubsystem{ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(NewPlayer->GetLocalPlayer())};
-		if (IsValid(InputSubsystem))
-		{
-			InputSubsystem->AddMappingContext(InputMappingContext, 0);
-		}
-	}
+	//	Input Handled by Lyra.
+	//
+	// const auto* PreviousPlayer{Cast<APlayerController>(PreviousController)};
+	// if (IsValid(PreviousPlayer))
+	// {
+	// 	auto* InputSubsystem{ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PreviousPlayer->GetLocalPlayer())};
+	// 	if (IsValid(InputSubsystem))
+	// 	{
+	// 		InputSubsystem->RemoveMappingContext(InputMappingContext);
+	// 	}
+	// }
+	//
+	// auto* NewPlayer{Cast<APlayerController>(GetController())};
+	// if (IsValid(NewPlayer))
+	// {
+	// 	NewPlayer->InputYawScale_DEPRECATED = 1.0f;
+	// 	NewPlayer->InputPitchScale_DEPRECATED = 1.0f;
+	// 	NewPlayer->InputRollScale_DEPRECATED = 1.0f;
+	//
+	// 	auto* InputSubsystem{ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(NewPlayer->GetLocalPlayer())};
+	// 	if (IsValid(InputSubsystem))
+	// 	{
+	// 		InputSubsystem->AddMappingContext(InputMappingContext, 0);
+	// 	}
+	// }
 
 	Super::NotifyControllerChanged();
 }
@@ -59,23 +61,25 @@ void AAlsCharacterExample::SetupPlayerInputComponent(UInputComponent* Input)
 {
 	Super::SetupPlayerInputComponent(Input);
 
-	auto* EnhancedInput{Cast<UEnhancedInputComponent>(Input)};
-	if (IsValid(EnhancedInput))
-	{
-		EnhancedInput->BindAction(LookMouseAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnLookMouse);
-		EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnLook);
-		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnMove);
-		EnhancedInput->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnSprint);
-		EnhancedInput->BindAction(WalkAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnWalk);
-		EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnCrouch);
-		EnhancedInput->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnJump);
-		EnhancedInput->BindAction(AimAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnAim);
-		EnhancedInput->BindAction(RagdollAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnRagdoll);
-		EnhancedInput->BindAction(RollAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnRoll);
-		EnhancedInput->BindAction(RotationModeAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnRotationMode);
-		EnhancedInput->BindAction(ViewModeAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnViewMode);
-		EnhancedInput->BindAction(SwitchShoulderAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnSwitchShoulder);
-	}
+//	Input Handled by Lyra.
+//
+//	auto* EnhancedInput{Cast<UEnhancedInputComponent>(Input)};
+//	if (IsValid(EnhancedInput))
+//	{
+//		EnhancedInput->BindAction(LookMouseAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnLookMouse);
+//		EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnLook);
+//		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnMove);
+//		EnhancedInput->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnSprint);
+//		EnhancedInput->BindAction(WalkAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnWalk);
+//		EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnCrouch);
+//		EnhancedInput->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnJump);
+//		EnhancedInput->BindAction(AimAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnAim);
+//		EnhancedInput->BindAction(RagdollAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnRagdoll);
+//		EnhancedInput->BindAction(RollAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnRoll);
+//		EnhancedInput->BindAction(RotationModeAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnRotationMode);
+//		EnhancedInput->BindAction(ViewModeAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnViewMode);
+//		EnhancedInput->BindAction(SwitchShoulderAction, ETriggerEvent::Triggered, this, &ThisClass::Input_OnSwitchShoulder);
+//	}
 }
 
 void AAlsCharacterExample::Input_OnLookMouse(const FInputActionValue& ActionValue)
