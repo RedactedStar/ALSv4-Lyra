@@ -7,17 +7,27 @@ Completely reworked and improved С++ version of [Advanced Locomotion System V4]
 The main purpose of this ALS version is is a complete and high-quality refactoring of every aspect of the plugin, so that it becomes easier to understand, more flexible, reliable (especially in network multiplayer), performant, and simply more pleasant to work with.
 
 ## Lyra Compatability
-- [ ] Added `LyraGame` Dependency.
-- [ ] Added `GAS` Dependency.
-- [ ] Added Retargeting Rigs `AnimMan Skeleton (UE4) <-> Manny Skeleton (UE5)`.
-- [ ] `AALSBaseCharacter` now inherits `ALyraCharacter`.
-- [ ] `UALSCharacterMovementComponent` now inherits `ULyraCharacterMovementComponent`.
+- [x] **Added:** `LyraGame` & `GAS` Dependency.
+- [x] **Fix:** "Mantle is only doing "In Air" mantles.."
+ - [x] **Rewrite:** ALS Inputs as Lyra Gameplay Abilites...
+- [x] **Fix:** "Ragdoll Detaching Completely.."
+  - [x] **Fix:** Can not get up from ragdoll, probably because of above.
+- [x] **Fix:** "Ragdoll Falling Through Ground.."
+- [x] **Set:** Appropriate ALS Gaits for Gameplay Tags e.g Sprint Gait in Sprint Ability
+- [x] **Add/Set:** Appropriate ALS Overlays to the Lyra weapons.
+  - [ ] **Rewrite:** ALS Overlay System Tags
+- [x] `AAlsCharacter` **now inherits** `ALyraCharacter`.
+- [x] `UAlsCharacterMovementComponent` **now inherits** `ULyraCharacterMovementComponent`.
+- [ ] **Added:** Retargeting Rigs `AnimMan Skeleton (UE4) <-> Manny Skeleton (UE5)`.
+  - [ ] **Retarget:** ALS Animations/Skeletion -> UE5 Skeleton
 
-### Lyra Setup !!
-- [x] Enable Tick on `ALyraCharacter`
+### Fresh Lyra Setup
+  1. Enable Tick on `ALyraCharacter`
+  2. Write Setup...
+     - (Likely will make a video tutorial will get linked here)
 
 #### Installing
-`git submodule add https://github.com/RemainingToast/ALS4Lyra.git Plugins/ALS`
+`git submodule add https://github.com/RemainingToast/ALS4Lyra.git Plugins/GameFeatures/ALS`
 
 ## Features
 
