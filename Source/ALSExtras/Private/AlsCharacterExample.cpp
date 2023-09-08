@@ -141,12 +141,12 @@ void AAlsCharacterExample::Input_OnJump(const FInputActionValue& ActionValue)
 {
 	if (ActionValue.Get<bool>())
 	{
-		if (TryStopRagdolling())
+		if (StopRagdolling())
 		{
 			return;
 		}
 
-		if (TryStartMantlingGrounded())
+		if (StartMantlingGrounded())
 		{
 			return;
 		}
@@ -172,7 +172,7 @@ void AAlsCharacterExample::Input_OnAim(const FInputActionValue& ActionValue)
 
 void AAlsCharacterExample::Input_OnRagdoll()
 {
-	if (!TryStopRagdolling())
+	if (!StopRagdolling())
 	{
 		StartRagdolling();
 	}
@@ -182,7 +182,7 @@ void AAlsCharacterExample::Input_OnRoll()
 {
 	static constexpr auto PlayRate{1.3f};
 
-	TryStartRolling(PlayRate);
+	StartRolling(PlayRate);
 }
 
 void AAlsCharacterExample::Input_OnRotationMode()
