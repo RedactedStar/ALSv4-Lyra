@@ -634,6 +634,7 @@ void AAlsCharacter::StartRagdollingImplementation()
 	GetMesh()->SetCollisionObjectType(ECC_PhysicsBody);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetMesh()->SetAllBodiesBelowSimulatePhysics(UAlsConstants::PelvisBoneName(), true, true);
+	GetMesh()->SetSimulatePhysics(true);
 
 	if (Settings->Ragdolling.bLimitInitialRagdollSpeed)
 	{
@@ -868,7 +869,7 @@ void AAlsCharacter::StopRagdollingImplementation()
 	OnRagdollEnded.Broadcast();
 
 	OnRagdollingEnded();
-
+	
 	if (RagdollingState.bGrounded &&
 	    GetMesh()->GetAnimInstance()->Montage_Play(SelectGetUpMontage(RagdollingState.bFacedUpward), 1.0f,
 	                                               EMontagePlayReturnType::MontageLength, 0.0f, true))
@@ -888,13 +889,12 @@ void AAlsCharacter::FinalizeRagdolling()
 
 	// Disable physics simulation of a mesh and enable capsule collision.
 
+	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetAllBodiesSimulatePhysics(false);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetCollisionObjectType(ECC_Pawn);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-
-	// TODO: re-attach capsule in c++?
 }
 
 UAnimMontage* AAlsCharacter::SelectGetUpMontage_Implementation(const bool bRagdollFacedUpward)
