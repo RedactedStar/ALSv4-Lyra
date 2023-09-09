@@ -26,7 +26,8 @@ https://www.youtube.com/watch?v=l-zVg79OXcQ
 
 ### Quick Start - Incomplete!
   1. Clone the repository to your project's `Plugins/GameFeatures` folder.
-     - **Recommended:** `git submodule add https://github.com/RemainingToast/ALS4Lyra.git Plugins/GameFeatures/ALS`
+     - **Recommended Installation:** 
+       - `git submodule add https://github.com/RemainingToast/ALS4Lyra.git Plugins/GameFeatures/ALS`
   2. Merge the `DefaultEngine.ini` and `DefaultInput.ini` files from the plugin's `Config` folder with files from your project's `Config` folder.
   3. Enable Tick on `ALyraCharacter.cpp`
   4. Recompile your project.
