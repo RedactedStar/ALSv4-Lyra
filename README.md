@@ -4,7 +4,7 @@
 
 Completely reworked and improved С++ version of [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1).
 
-The main purpose of this ALS version is a complete compatible [Lyra](https://docs.unrealengine.com/5.0/en-US/lyra-sample-game-in-unreal-engine/) GameFeature plugin.
+The main purpose of this ALS version is be a complete compatible [Lyra](https://docs.unrealengine.com/5.0/en-US/lyra-sample-game-in-unreal-engine/) GameFeature plugin.
 
 ## Lyra Compatability
 - [x] **Added:** `LyraGame` & `GAS` Dependency.
