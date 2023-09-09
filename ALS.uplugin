@@ -23,11 +23,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"AIModule",
-				"GameplayTasks",
-				"GameplayTags",
-				"GameplayAbilities",
-				"LyraGame"
+				"CommonDependencies"
 			]
 		},
 		{
@@ -35,11 +31,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"AIModule",
-				"GameplayTasks",
-				"GameplayTags",
-				"GameplayAbilities",
-				"LyraGame"
+				"CommonDependencies"
 			]
 		},
 		{
@@ -47,11 +39,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"AIModule",
-				"GameplayTasks",
-				"GameplayTags",
-				"GameplayAbilities",
-				"LyraGame"
+				"CommonDependencies"
 			]
 		},
 		{
@@ -59,11 +47,7 @@
 			"Type": "UncookedOnly",
 			"LoadingPhase": "PreDefault",
 			"AdditionalDependencies": [
-				"AIModule",
-				"GameplayTasks",
-				"GameplayTags",
-				"GameplayAbilities",
-				"LyraGame"
+				"CommonDependencies"
 			]
 		}
 	],
@@ -120,5 +104,12 @@
 			"Name": "ShooterMaps",
 			"Enabled": true
 		}
+	],	
+	"CommonDependencies": [
+		"AIModule",
+		"GameplayTasks",
+		"GameplayTags",
+		"GameplayAbilities",
+		"LyraGame"
 	]
 }
