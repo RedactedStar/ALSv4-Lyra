@@ -500,6 +500,8 @@ void AAlsCharacter::NotifyLocomotionModeChanged(const FGameplayTag& PreviousLoco
 		StartRagdolling();
 	}
 
+	OnLocomotionChanged.Broadcast();
+
 	OnLocomotionModeChanged(PreviousLocomotionMode);
 }
 
@@ -903,8 +905,16 @@ void AAlsCharacter::SetOverlayMode(const FGameplayTag& NewOverlayMode)
 		if (GetLocalRole() == ROLE_AutonomousProxy)
 		{
 			ServerSetOverlayMode(OverlayMode);
+		} else if (GetLocalRole() == ROLE_Authority)
+		{
+			ClientSetOverlayMode(OverlayMode);
 		}
 	}
+}
+
+void AAlsCharacter::ClientSetOverlayMode_Implementation(const FGameplayTag& NewOverlayMode)
+{
+	SetOverlayMode(NewOverlayMode);
 }
 
 void AAlsCharacter::ServerSetOverlayMode_Implementation(const FGameplayTag& NewOverlayMode)

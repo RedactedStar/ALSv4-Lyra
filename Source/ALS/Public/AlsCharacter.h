@@ -19,6 +19,7 @@ class UAlsAnimationInstance;
 class UAlsMantlingSettings;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRagdollEnded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLocomotionChanged);
 
 UCLASS(AutoExpandCategories = ("Settings|Als Character", "Settings|Als Character|Desired State", "State|Als Character"))
 class ALS_API AAlsCharacter : public ALyraCharacter
@@ -93,6 +94,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient)
 	FAlsLocomotionState LocomotionState;
+
+	UPROPERTY(BlueprintAssignable, Category = "State|Als Character")
+	FOnLocomotionChanged OnLocomotionChanged;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient)
 	int32 MantlingRootMotionSourceId;
@@ -293,6 +297,9 @@ public:
 	void SetOverlayMode(const FGameplayTag& NewOverlayMode);
 
 private:
+	UFUNCTION(Client, Reliable)
+	void ClientSetOverlayMode(const FGameplayTag& NewOverlayMode);
+	
 	UFUNCTION(Server, Reliable)
 	void ServerSetOverlayMode(const FGameplayTag& NewOverlayMode);
 
