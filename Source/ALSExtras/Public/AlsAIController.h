@@ -1,10 +1,11 @@
 #pragma once
 
 #include "AIController.h"
+#include "Player/LyraPlayerBotController.h"
 #include "AlsAIController.generated.h"
 
 UCLASS(DisplayName = "Als AI Controller")
-class ALSEXTRAS_API AAlsAIController : public AAIController
+class ALSEXTRAS_API AAlsAIController : public ALyraPlayerBotController
 {
 	GENERATED_BODY()
 

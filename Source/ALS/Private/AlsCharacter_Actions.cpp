@@ -1,13 +1,16 @@
+#include "AbilitySystemComponent.h"
 #include "AlsCharacter.h"
 
 #include "AlsAnimationInstance.h"
 #include "AlsCharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Abilities/Tasks/AbilityTask.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Curves/CurveFloat.h"
 #include "Curves/CurveVector.h"
 #include "Engine/NetConnection.h"
+#include "Equipment/LyraQuickBarComponent.h"
 #include "Net/Core/PushModel/PushModel.h"
 #include "RootMotionSources/AlsRootMotionSource_Mantling.h"
 #include "Settings/AlsCharacterSettings.h"
@@ -85,13 +88,16 @@ void AAlsCharacter::MulticastStartRolling_Implementation(UAnimMontage* Montage, 
 void AAlsCharacter::StartRollingImplementation(UAnimMontage* Montage, const float PlayRate,
                                                const float StartYawAngle, const float TargetYawAngle)
 {
-	if (IsRollingAllowedToStart(Montage) && GetMesh()->GetAnimInstance()->Montage_Play(Montage, PlayRate))
+	if (IsRollingAllowedToStart(Montage))
 	{
-		RollingState.TargetYawAngle = TargetYawAngle;
-
-		RefreshRotationInstant(StartYawAngle);
-
 		SetLocomotionAction(AlsLocomotionActionTags::Rolling);
+		
+		if (GetMesh()->GetAnimInstance()->Montage_Play(Montage, PlayRate))
+		{
+			RollingState.TargetYawAngle = TargetYawAngle;
+
+			RefreshRotationInstant(StartYawAngle);
+		}
 	}
 }
 
@@ -440,7 +446,7 @@ void AAlsCharacter::StartMantlingImplementation(const FAlsMantlingParameters& Pa
 
 	// Clear the character movement mode and set the locomotion action to mantling.
 
-	GetCharacterMovement()->SetMovementMode(MOVE_Custom);
+	GetCharacterMovement()->SetMovementMode(MOVE_Custom, ALS_Mantling);
 	GetCharacterMovement()->SetBase(Parameters.TargetPrimitive.Get());
 	AlsCharacterMovement->SetMovementModeLocked(true);
 
@@ -513,7 +519,7 @@ void AAlsCharacter::RefreshMantling()
 	    RootMotionSource->Status.HasFlag(ERootMotionSourceStatusFlags::Finished) ||
 	    RootMotionSource->Status.HasFlag(ERootMotionSourceStatusFlags::MarkedForRemoval) ||
 	    (LocomotionAction.IsValid() && LocomotionAction != AlsLocomotionActionTags::Mantling) ||
-	    GetCharacterMovement()->MovementMode != MOVE_Custom)
+	    (GetCharacterMovement()->MovementMode != MOVE_Custom && GetCharacterMovement()->CustomMovementMode != ALS_Mantling))
 	{
 		StopMantling();
 		ForceNetUpdate();
@@ -623,11 +629,11 @@ void AAlsCharacter::StartRagdollingImplementation()
 
 	// Clear the character movement mode and set the locomotion action to ragdolling.
 
-	GetCharacterMovement()->SetMovementMode(MOVE_None);
+	GetCharacterMovement()->SetMovementMode(MOVE_Custom, ALS_Ragdolling); // Custom Ragdoll Movement Mode
 	AlsCharacterMovement->SetMovementModeLocked(true);
 
-	SetLocomotionAction(AlsLocomotionActionTags::Ragdolling);
-
+	SetLocomotionAction(AlsLocomotionActionTags::Ragdolling); // @todo remove locomotion actions
+	
 	// Disable capsule collision and enable mesh physics simulation starting from the pelvis.
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -662,6 +668,16 @@ void AAlsCharacter::StartRagdollingImplementation()
 	if (GetLocalRole() >= ROLE_AutonomousProxy)
 	{
 		SetRagdollTargetLocation(GetMesh()->GetSocketLocation(UAlsConstants::PelvisBoneName()));
+	}
+
+	// Unequip active slot - casting hell...
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		UActorComponent* FoundComponent = PlayerController->FindComponentByClass(ULyraQuickBarComponent::StaticClass());
+		if (ULyraQuickBarComponent* QuickBar = Cast<ULyraQuickBarComponent>(FoundComponent))
+		{
+			QuickBar->SetActiveSlotEmpty();
+		}
 	}
 
 	OnRagdollingStarted();
@@ -877,6 +893,16 @@ void AAlsCharacter::StopRagdollingImplementation()
 	                                               EMontagePlayReturnType::MontageLength, 0.0f, true))
 	{
 		SetLocomotionAction(AlsLocomotionActionTags::GettingUp);
+
+		// Re-equip active slot - casting hell...
+		if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+		{
+			UActorComponent* FoundComponent = PlayerController->FindComponentByClass(ULyraQuickBarComponent::StaticClass());
+			if (ULyraQuickBarComponent* QuickBar = Cast<ULyraQuickBarComponent>(FoundComponent))
+			{
+				QuickBar->SetLastActiveSlot();
+			}
+		}
 	}
 }
 

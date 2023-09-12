@@ -142,6 +142,15 @@ public:
 
 	virtual void Restart() override;
 
+protected:
+	// Gameplay Tags
+	
+	void AddRemoveLooseGameplayTag(const FGameplayTag& TagToAdd, const FGameplayTag& TagToRemove) const;
+	
+	void ApplyLooseGameplayTag(const FGameplayTag& Tag, bool bShouldReplicate) const;
+	
+	void RemoveLooseGameplayTag(const FGameplayTag& Tag, bool bShouldReplicate) const;
+	
 private:
 	void RefreshUsingAbsoluteRotation() const;
 
@@ -173,11 +182,11 @@ protected:
 	void SetLocomotionMode(const FGameplayTag& NewLocomotionMode);
 
 private:
-	void NotifyLocomotionModeChanged(const FGameplayTag& PreviousLocomotionMode);
+	void NotifyLocomotionModeChanged(const FGameplayTag& NewLocomotionMode, const FGameplayTag& PreviousLocomotionMode);
 
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Als Character")
-	void OnLocomotionModeChanged(const FGameplayTag& PreviousLocomotionMode);
+	void OnLocomotionModeChanged(const FGameplayTag& NewLocomotionMode, const FGameplayTag& PreviousLocomotionMode);
 
 	// Desired Aiming
 
@@ -309,7 +318,7 @@ private:
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Als Character")
 	void OnOverlayModeChanged(const FGameplayTag& PreviousOverlayMode);
-
+	
 	// Locomotion Action
 
 public:
@@ -318,11 +327,11 @@ public:
 	void SetLocomotionAction(const FGameplayTag& NewLocomotionAction);
 
 private:
-	void NotifyLocomotionActionChanged(const FGameplayTag& PreviousLocomotionAction);
+	void NotifyLocomotionActionChanged(const FGameplayTag& NewLocomotionAction, const FGameplayTag& PreviousLocomotionAction);
 
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Als Character")
-	void OnLocomotionActionChanged(const FGameplayTag& PreviousLocomotionAction);
+	void OnLocomotionActionChanged(const FGameplayTag& NewLocomotionAction, const FGameplayTag& PreviousLocomotionAction);
 
 	// Input
 

@@ -3,6 +3,17 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AlsConstants.generated.h"
 
+/** Movement modes for Characters. */
+UENUM(BlueprintType)
+enum EALSMovementMode : int
+{
+	/** Custom als movement modes */
+	/** Als Ragdolling. */
+	ALS_Ragdolling	UMETA(DisplayName="Ragdolling"),
+	/** Als Mantling. */
+	ALS_Mantling	UMETA(DisplayName="Mantling")
+};
+
 UCLASS(Meta = (BlueprintThreadSafe))
 class ALS_API UAlsConstants : public UBlueprintFunctionLibrary
 {

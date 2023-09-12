@@ -3,6 +3,7 @@
 #include "AlsAnimationInstance.h"
 #include "AlsCharacterMovementComponent.h"
 #include "TimerManager.h"
+#include "AbilitySystem/LyraAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Curves/CurveFloat.h"
@@ -395,7 +396,11 @@ void AAlsCharacter::SetViewMode(const FGameplayTag& NewViewMode)
 {
 	if (ViewMode != NewViewMode)
 	{
+		const auto PreviousViewMode{ViewMode};
+		
 		ViewMode = NewViewMode;
+
+		AddRemoveLooseGameplayTag(ViewMode, PreviousViewMode);
 
 		MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, ViewMode, this)
 
@@ -443,11 +448,13 @@ void AAlsCharacter::SetLocomotionMode(const FGameplayTag& NewLocomotionMode)
 
 		LocomotionMode = NewLocomotionMode;
 
-		NotifyLocomotionModeChanged(PreviousLocomotionMode);
+		AddRemoveLooseGameplayTag(LocomotionMode, PreviousLocomotionMode);
+
+		NotifyLocomotionModeChanged(LocomotionMode, PreviousLocomotionMode);
 	}
 }
 
-void AAlsCharacter::NotifyLocomotionModeChanged(const FGameplayTag& PreviousLocomotionMode)
+void AAlsCharacter::NotifyLocomotionModeChanged(const FGameplayTag& NewLocomotionMode, const FGameplayTag& PreviousLocomotionMode)
 {
 	ApplyDesiredStance();
 
@@ -502,10 +509,10 @@ void AAlsCharacter::NotifyLocomotionModeChanged(const FGameplayTag& PreviousLoco
 
 	OnLocomotionChanged.Broadcast();
 
-	OnLocomotionModeChanged(PreviousLocomotionMode);
+	OnLocomotionModeChanged(NewLocomotionMode, PreviousLocomotionMode);
 }
 
-void AAlsCharacter::OnLocomotionModeChanged_Implementation(const FGameplayTag& PreviousLocomotionMode) {}
+void AAlsCharacter::OnLocomotionModeChanged_Implementation(const FGameplayTag& NewLocomotionMode, const FGameplayTag& PreviousLocomotionMode) {}
 
 void AAlsCharacter::SetDesiredAiming(const bool bNewDesiredAiming)
 {
@@ -565,6 +572,8 @@ void AAlsCharacter::SetRotationMode(const FGameplayTag& NewRotationMode)
 		const auto PreviousRotationMode{RotationMode};
 
 		RotationMode = NewRotationMode;
+
+		AddRemoveLooseGameplayTag(RotationMode, PreviousRotationMode);
 
 		OnRotationModeChanged(PreviousRotationMode);
 	}
@@ -767,6 +776,8 @@ void AAlsCharacter::SetStance(const FGameplayTag& NewStance)
 
 		Stance = NewStance;
 
+		AddRemoveLooseGameplayTag(Stance, PreviousStance);
+
 		OnStanceChanged(PreviousStance);
 	}
 }
@@ -800,6 +811,8 @@ void AAlsCharacter::SetGait(const FGameplayTag& NewGait)
 		const auto PreviousGait{Gait};
 
 		Gait = NewGait;
+
+		AddRemoveLooseGameplayTag(Gait, PreviousGait);
 
 		OnGaitChanged(PreviousGait);
 	}
@@ -898,6 +911,8 @@ void AAlsCharacter::SetOverlayMode(const FGameplayTag& NewOverlayMode)
 
 		OverlayMode = NewOverlayMode;
 
+		AddRemoveLooseGameplayTag(OverlayMode, PreviousOverlayMode);
+
 		MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, OverlayMode, this)
 
 		OnOverlayModeChanged(PreviousOverlayMode);
@@ -934,21 +949,23 @@ void AAlsCharacter::SetLocomotionAction(const FGameplayTag& NewLocomotionAction)
 	if (LocomotionAction != NewLocomotionAction)
 	{
 		const auto PreviousLocomotionAction{LocomotionAction};
-
+		
 		LocomotionAction = NewLocomotionAction;
 
-		NotifyLocomotionActionChanged(PreviousLocomotionAction);
+		AddRemoveLooseGameplayTag(LocomotionAction, PreviousLocomotionAction);
+
+		NotifyLocomotionActionChanged(LocomotionAction, PreviousLocomotionAction);
 	}
 }
 
-void AAlsCharacter::NotifyLocomotionActionChanged(const FGameplayTag& PreviousLocomotionAction)
+void AAlsCharacter::NotifyLocomotionActionChanged(const FGameplayTag& NewLocomotionAction, const FGameplayTag& PreviousLocomotionAction)
 {
 	ApplyDesiredStance();
 
-	OnLocomotionActionChanged(PreviousLocomotionAction);
+	OnLocomotionActionChanged(NewLocomotionAction, PreviousLocomotionAction);
 }
 
-void AAlsCharacter::OnLocomotionActionChanged_Implementation(const FGameplayTag& PreviousLocomotionAction) {}
+void AAlsCharacter::OnLocomotionActionChanged_Implementation(const FGameplayTag& NewLocomotionAction, const FGameplayTag& PreviousLocomotionAction) {}
 
 FRotator AAlsCharacter::GetViewRotation() const
 {
@@ -1628,4 +1645,44 @@ void AAlsCharacter::RefreshViewRelativeTargetYawAngle()
 {
 	LocomotionState.ViewRelativeTargetYawAngle = FRotator3f::NormalizeAxis(UE_REAL_TO_FLOAT(
 		ViewState.Rotation.Yaw - LocomotionState.TargetYawAngle));
+}
+
+// Gameplay Tags
+
+void AAlsCharacter::AddRemoveLooseGameplayTag(const FGameplayTag& TagToAdd, const FGameplayTag& TagToRemove) const
+{
+	if (TagToAdd.IsValid() && !HasMatchingGameplayTag(TagToAdd))
+	{
+		ApplyLooseGameplayTag(TagToAdd, true);
+	}
+	if (TagToRemove.IsValid() && HasMatchingGameplayTag(TagToRemove))
+	{
+		RemoveLooseGameplayTag(TagToRemove, true);
+	}
+}
+
+void AAlsCharacter::ApplyLooseGameplayTag(const FGameplayTag& Tag, const bool bShouldReplicate) const
+{
+	if (ULyraAbilitySystemComponent* AbilitySystem = GetLyraAbilitySystemComponent())
+	{
+		AbilitySystem->AddLooseGameplayTag(Tag);
+
+		if (bShouldReplicate)
+		{
+			AbilitySystem->AddReplicatedLooseGameplayTag(Tag);
+		}
+	}
+}
+
+void AAlsCharacter::RemoveLooseGameplayTag(const FGameplayTag& Tag, const bool bShouldReplicate) const
+{
+	if (ULyraAbilitySystemComponent* AbilitySystem = GetLyraAbilitySystemComponent())
+	{
+		AbilitySystem->RemoveLooseGameplayTag(Tag);
+
+		if (bShouldReplicate)
+		{
+			AbilitySystem->RemoveReplicatedLooseGameplayTag(Tag);
+		}
+	}
 }

@@ -11,7 +11,7 @@ public class ALSCamera : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new[]
 		{
-			"Core", "CoreUObject", "Engine", "GameplayTags", "ModularGameplay", "ALS"
+			"Core", "CoreUObject", "Engine", "GameplayTags", "ModularGameplay", "ModularGameplayActors", "ALS"
 		});
 	}
 }
