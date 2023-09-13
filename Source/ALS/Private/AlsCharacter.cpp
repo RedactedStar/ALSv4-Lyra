@@ -506,6 +506,16 @@ void AAlsCharacter::NotifyLocomotionModeChanged(const FGameplayTag& NewLocomotio
 
 		StartRagdolling();
 	}
+	/** @Game-Change ALS Ragdolling In Air - begin */
+	else if (LocomotionMode == AlsLocomotionModeTags::InAir &&
+			 LocomotionAction != AlsLocomotionActionTags::Ragdolling &&
+			 Settings->Ragdolling.bStartRagdollingInAir &&
+			(LocomotionState.Velocity.Z <= -Settings->Ragdolling.RagdollingOnLandSpeedThreshold ||
+			LocomotionState.Acceleration.Size() <= -Settings->Ragdolling.RagdollingInAirSpeedThreshold))
+	{
+		StartRagdolling();
+	}
+	/** @Game-Change ALS Ragdolling In Air - end */
 
 	OnLocomotionChanged.Broadcast();
 

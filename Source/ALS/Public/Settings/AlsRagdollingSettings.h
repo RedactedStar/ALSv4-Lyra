@@ -12,6 +12,14 @@ struct ALS_API FAlsRagdollingSettings
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
+	bool bStartRagdollingInAir{true};
+
+	// If a character in air has a speed greater than the specified value, then start ragdolling.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS",
+		Meta = (ClampMin = 0, EditCondition = "bStartRagdollingInAir", ForceUnits = "cm/s"))
+	float RagdollingInAirSpeedThreshold{400.0f};
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
 	bool bStartRagdollingOnLand{true};
 
 	// If a character landed with a speed greater than the specified value, then start ragdolling.

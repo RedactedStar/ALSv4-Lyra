@@ -104,7 +104,7 @@
 			"Name": "ShooterMaps",
 			"Enabled": true
 		}
-	],	
+	],
 	"CommonDependencies": [
 		"AIModule",
 		"GameplayTasks",
