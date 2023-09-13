@@ -141,6 +141,21 @@ public:
 protected:
 	virtual void ControlledCharacterMove(const FVector& InputVector, float DeltaTime) override;
 
+	/* @Game-Change Add CitySample Slide Detection - Begin */
+	virtual float SlideAlongSurface(const FVector& Delta, float Time, const FVector& Normal, FHitResult& Hit, bool bHandleImpact) override;
+
+	// Minimum angle for movement to slide against. This prevents sliding against very sharp angles that will result in very small movements. Only active if greater than 0.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State|Surface Slide")
+	float MinSurfaceSlideAngle = 0.0f;
+
+	// Minimum angle for movement to slide against when colliding against a character
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State|Surface Slide")
+	float MinSurfaceSlideAngleCharacter = 0.0f;
+	
+private:
+	float TimeLastSlideAlongSurfaceBlock = -1000.0f;
+	/* @Game-Change Add CitySample Slide Detection - End */
+
 public:
 	virtual void PhysicsRotation(float DeltaTime) override;
 

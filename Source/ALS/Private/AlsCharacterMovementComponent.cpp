@@ -11,6 +11,19 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(AlsCharacterMovementComponent)
 
+namespace AlsCharacterMovementStatics
+{
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+	static int32 VisualizeSlideAlongSurface = 0;
+	FAutoConsoleVariableRef CVarVisualizeSlideAlongSurface(
+		TEXT("Als.VisualizeSlideAlongSurface"),
+		VisualizeSlideAlongSurface,
+		TEXT("Whether to draw in-world debug information for character movement's slide along surface.\n")
+		TEXT("0: Disable, 1: Enable"),
+		ECVF_Cheat);
+#endif
+}
+
 void FAlsCharacterNetworkMoveData::ClientFillNetworkMoveData(const FSavedMove_Character& Move, const ENetworkMoveType MoveType)
 {
 	Super::ClientFillNetworkMoveData(Move, MoveType);
@@ -272,6 +285,58 @@ void UAlsCharacterMovementComponent::ControlledCharacterMove(const FVector& Inpu
 		PreviousControlRotation = Controller->GetControlRotation();
 	}
 }
+
+/* @Game-Change Add CitySample Slide Detection - Begin */
+float UAlsCharacterMovementComponent::SlideAlongSurface(const FVector& Delta, float Time, const FVector& InNormal, FHitResult& Hit, bool bHandleImpact)
+{
+	FVector Normal(InNormal);
+
+	const bool bHitCharacter = Hit.GetHitObjectHandle().DoesRepresentClass(ACharacter::StaticClass());
+	//bLastSurfaceWasCharacter = bHitCharacter;
+	const float EffectiveMinHorizontalSurfaceSlideAngle = bHitCharacter ? MinSurfaceSlideAngleCharacter : MinSurfaceSlideAngle;
+	if (EffectiveMinHorizontalSurfaceSlideAngle > 0.0f)
+	{
+		// Use input acceleration as our movement direction because our "movement delta" may already be affected by the surface slide.
+		const FVector MovementDirection = Acceleration.GetSafeNormal2D();
+
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+		FColor HitNormalColor = FColor::Green;
+#endif
+
+		const float MovementDotNormal = MovementDirection | Normal;
+		if (FMath::Abs(MovementDotNormal) > FMath::Cos(FMath::DegreesToRadians(EffectiveMinHorizontalSurfaceSlideAngle)))
+		{
+			// If the angle is too sharp, consider it opposite to our movement
+			Normal = -MovementDirection;
+			TimeLastSlideAlongSurfaceBlock = GetWorld()->GetTimeSeconds();
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+			HitNormalColor = FColor::Red;
+#endif
+		}
+
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+		if (AlsCharacterMovementStatics::VisualizeSlideAlongSurface > 0 &&
+			CharacterOwner->IsPlayerControlled() &&
+			CharacterOwner->GetController()->IsLocalController() &&
+			CharacterOwner->HasAuthority())
+		{
+			const float DebugAngle = FMath::RadiansToDegrees(FMath::Acos(FMath::Abs(MovementDotNormal)));
+			const float HalfHeight = CharacterOwner->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() - 15; // Offset so its around knees
+			const FVector FeetLocation = FVector(
+				CharacterOwner->GetActorLocation().X,
+				CharacterOwner->GetActorLocation().Y,
+				CharacterOwner->GetActorLocation().Z - HalfHeight);
+			
+			DrawDebugLine(GetWorld(), FeetLocation, FeetLocation + Normal * 30.0f, HitNormalColor, false, -1.0f, SDPG_Foreground, 3.0f);
+			DrawDebugLine(GetWorld(), FeetLocation, FeetLocation + MovementDirection * 30.0f, FColor::Blue, false, -1.0f, SDPG_Foreground, 3.0f);
+			DrawDebugString(GetWorld(), FeetLocation, FString::SanitizeFloat(DebugAngle), nullptr, FColor::White, 0.0f, false, 3.0f);
+		}
+#endif
+	}
+
+	return Super::SlideAlongSurface(Delta, Time, Normal, Hit, bHandleImpact);
+}
+/* @Game-Change Add CitySample Slide Detection - End */
 
 void UAlsCharacterMovementComponent::PhysicsRotation(const float DeltaTime)
 {
