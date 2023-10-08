@@ -1,8 +1,26 @@
 #pragma once
 
+#include "RigVMFunctions/Math/RigVMFunction_MathFloat.h"
 #include "RigVMFunctions/Simulation/RigVMFunction_SimBase.h"
 #include "Units/RigUnit.h"
 #include "AlsRigUnits.generated.h"
+
+USTRUCT(DisplayName="Clamp 01", Meta = (Category = "ALS"))
+struct ALS_API FAlsRigVMFunction_Clamp01Float : public FRigVMFunction_MathFloatBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(Meta = (Input))
+	float Value{0.0f};
+
+	UPROPERTY(Meta = (Output))
+	float Result{0.0f};
+
+public:
+	RIGVM_METHOD()
+	virtual void Execute() override;
+};
 
 USTRUCT(DisplayName = "Exponential Decay (Vector)", Meta = (Category = "ALS"))
 struct ALS_API FAlsRigVMFunction_ExponentialDecayVector : public FRigVMFunction_SimBase
@@ -29,7 +47,7 @@ public:
 	virtual void Execute() override;
 };
 
-// Calculates the intersection location and direction of the perpendicular to AC through B.
+// Calculates the projection location and direction of the perpendicular to AC through B.
 USTRUCT(DisplayName = "Calculate Pole Vector", Meta = (Category = "ALS", NodeColor = "0.05 0.25 0.05"))
 struct ALS_API FAlsRigUnit_CalculatePoleVector : public FRigUnit
 {
@@ -51,11 +69,11 @@ public:
 	UPROPERTY(Transient, Meta = (Output))
 	bool bSuccess{false};
 
-	UPROPERTY(Transient, Meta = (Output))
-	FVector StartLocation{ForceInit};
+	UPROPERTY(Transient, DisplayName = "Item B Location", Meta = (Output))
+	FVector ItemBLocation{ForceInit};
 
-	UPROPERTY(Transient, Meta = (Output))
-	FVector EndLocation{ForceInit};
+	UPROPERTY(Transient, DisplayName = "Item B Projection Location", Meta = (Output))
+	FVector ItemBProjectionLocation{ForceInit};
 
 	UPROPERTY(Transient, Meta = (Output))
 	FVector Direction{FVector::ForwardVector};

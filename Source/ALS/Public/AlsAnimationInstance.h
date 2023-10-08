@@ -51,6 +51,7 @@ protected:
 
 	mutable TArray<TFunction<void()>> DisplayDebugTracesQueue;
 #endif
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State", Transient)
 	FGameplayTag ViewMode{AlsViewModeTags::ThirdPerson};
 
@@ -115,8 +116,6 @@ protected:
 	FAlsRagdollingAnimationState RagdollingState;
 
 public:
-	UAlsAnimationInstance();
-
 	virtual void NativeInitializeAnimation() override;
 
 	virtual void NativeBeginPlay() override;
@@ -125,7 +124,7 @@ public:
 
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaTime) override;
 
-	virtual void NativePostEvaluateAnimation() override;
+	virtual void NativePostUpdateAnimation();
 
 protected:
 	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override;
@@ -163,7 +162,7 @@ private:
 
 	void RefreshView(float DeltaTime);
 
-	void RefreshSpineRotation(float DeltaTime);
+	void RefreshSpineRotation(float SpineBlendAmount, float DeltaTime);
 
 protected:
 	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance", Meta = (BlueprintProtected, BlueprintThreadSafe))
@@ -237,6 +236,11 @@ private:
 
 	// Feet
 
+public:
+	// If true, the foot locking will be temporarily "paused". This is not the same as a
+	// complete shutdown because the internal state of the foot locking will continue to update.
+	virtual bool IsFootLockInhibited() const;
+
 private:
 	void RefreshFeetOnGameThread();
 
@@ -257,22 +261,22 @@ private:
 	// Transitions
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance", Meta = (BlueprintThreadSafe))
 	void PlayQuickStopAnimation();
 
-	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance", Meta = (BlueprintThreadSafe))
 	void PlayTransitionAnimation(UAnimSequenceBase* Animation, float BlendInDuration = 0.2f, float BlendOutDuration = 0.2f,
 	                             float PlayRate = 1.0f, float StartTime = 0.0f, bool bFromStandingIdleOnly = false);
 
-	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance", Meta = (BlueprintThreadSafe))
 	void PlayTransitionLeftAnimation(float BlendInDuration = 0.2f, float BlendOutDuration = 0.2f, float PlayRate = 1.0f,
 	                                 float StartTime = 0.0f, bool bFromStandingIdleOnly = false);
 
-	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance", Meta = (BlueprintThreadSafe))
 	void PlayTransitionRightAnimation(float BlendInDuration = 0.2f, float BlendOutDuration = 0.2f, float PlayRate = 1.0f,
 	                                  float StartTime = 0.0f, bool bFromStandingIdleOnly = false);
 
-	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance")
+	UFUNCTION(BlueprintCallable, Category = "ALS|Animation Instance", Meta = (BlueprintThreadSafe))
 	void StopTransitionAndTurnInPlaceAnimations(float BlendOutDuration = 0.2f);
 
 private:
@@ -280,7 +284,9 @@ private:
 
 	void RefreshDynamicTransition();
 
-	void PlayQueuedDynamicTransitionAnimation();
+	void PlayQueuedTransitionAnimation();
+
+	void StopQueuedTransitionAndTurnInPlaceAnimations();
 
 	// Rotate In Place
 

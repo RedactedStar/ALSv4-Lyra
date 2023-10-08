@@ -4,6 +4,11 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(AlsRigUnits)
 
+FAlsRigVMFunction_Clamp01Float_Execute()
+{
+	Result = UAlsMath::Clamp01(Value);
+}
+
 void FAlsRigVMFunction_ExponentialDecayVector::Initialize()
 {
 	bInitialized = false;
@@ -11,6 +16,8 @@ void FAlsRigVMFunction_ExponentialDecayVector::Initialize()
 
 FAlsRigVMFunction_ExponentialDecayVector_Execute()
 {
+	DECLARE_SCOPE_HIERARCHICAL_COUNTER_RIGUNIT()
+
 	if (!bInitialized)
 	{
 		Current = Target;
@@ -19,36 +26,6 @@ FAlsRigVMFunction_ExponentialDecayVector_Execute()
 	}
 
 	Current = UAlsMath::ExponentialDecay(Current, Target, ExecuteContext.GetDeltaTime(), Lambda);
-}
-
-static bool TryCalculatePoleVector(const FVector& ALocation, const FVector& BLocation, const FVector& CLocation,
-                                   FVector& ProjectionLocation, FVector& Direction)
-{
-	auto AcVector{CLocation - ALocation};
-	auto AbVector{BLocation - ALocation};
-
-	if (!AcVector.Normalize())
-	{
-		if (!AbVector.Normalize())
-		{
-			return false;
-		}
-
-		ProjectionLocation = ALocation;
-		Direction = AbVector;
-
-		return true;
-	}
-
-	if (AbVector.IsNearlyZero())
-	{
-		return false;
-	}
-
-	ProjectionLocation = ALocation + AbVector.ProjectOnToNormal(AcVector);
-	Direction = (BLocation - ProjectionLocation).GetSafeNormal();
-
-	return true;
 }
 
 void FAlsRigUnit_CalculatePoleVector::Initialize()
@@ -82,30 +59,23 @@ FAlsRigUnit_CalculatePoleVector_Execute()
 		return;
 	}
 
-	if (!bInitial)
+	const auto NewItemBLocation{Hierarchy->GetGlobalTransformByIndex(CachedItemB, bInitial).GetLocation()};
+	FVector NewItemBProjectionLocation;
+	FVector NewDirection;
+
+	if (!UAlsMath::TryCalculatePoleVector(Hierarchy->GetGlobalTransformByIndex(CachedItemA, bInitial).GetLocation(), NewItemBLocation,
+	                                      Hierarchy->GetGlobalTransformByIndex(CachedItemC, bInitial).GetLocation(),
+	                                      NewItemBProjectionLocation, NewDirection))
 	{
-		const auto NewEndLocation{Hierarchy->GetGlobalTransform(CachedItemB).GetLocation()};
-
-		if (TryCalculatePoleVector(Hierarchy->GetGlobalTransform(CachedItemA).GetLocation(), NewEndLocation,
-		                           Hierarchy->GetGlobalTransform(CachedItemC).GetLocation(), StartLocation, Direction))
-		{
-			EndLocation = NewEndLocation;
-			bSuccess = true;
-			return;
-		}
-	}
-
-	const auto NewEndLocation{Hierarchy->GetInitialGlobalTransform(CachedItemB).GetLocation()};
-
-	if (TryCalculatePoleVector(Hierarchy->GetInitialGlobalTransform(CachedItemA).GetLocation(), NewEndLocation,
-	                           Hierarchy->GetInitialGlobalTransform(CachedItemC).GetLocation(), StartLocation, Direction))
-	{
-		EndLocation = NewEndLocation;
-		bSuccess = true;
+		// Reuse the last successful result if a new pole vector can't be calculated.
+		bSuccess = false;
 		return;
 	}
 
-	bSuccess = false;
+	ItemBLocation = NewItemBLocation;
+	ItemBProjectionLocation = NewItemBProjectionLocation;
+	Direction = NewDirection;
+	bSuccess = true;
 }
 
 void FAlsRigUnit_HandIkRetargeting::Initialize()

@@ -97,6 +97,11 @@ public:
 	static FVector SpringDampVector(const FVector& Current, const FVector& Target, UPARAM(ref) FAlsSpringVectorState& SpringState,
 	                                float DeltaTime, float Frequency, float DampingRatio, float TargetVelocityAmount = 1.0f);
 
+	// Remaps the angle from the [175, 180] range to [-185, -180]. Used to
+	// make the character rotate counterclockwise during a 180 degree turn.
+	template <typename ValueType>
+	static constexpr float RemapAngleForCounterClockwiseRotation(ValueType Angle);
+
 	UFUNCTION(BlueprintPure, Category = "ALS|Math|Vector", Meta = (AutoCreateRefTerm = "Vector", ReturnDisplayName = "Vector"))
 	static FVector ClampMagnitude01(const FVector& Vector);
 
@@ -140,7 +145,24 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Math|Input", Meta = (ReturnDisplayName = "Direction"))
 	static EAlsMovementDirection CalculateMovementDirection(float Angle, float ForwardHalfAngle, float AngleThreshold);
+
+	// Calculates the projection location and direction of the perpendicular to AC through B.
+	UFUNCTION(BlueprintCallable, Category = "ALS|Math|Input",
+		Meta = (AutoCreateRefTerm = "ALocation, BLocation, CLocation", ExpandBoolAsExecs = "ReturnValue"))
+	static bool TryCalculatePoleVector(const FVector& ALocation, const FVector& BLocation, const FVector& CLocation,
+	                                   FVector& ProjectionLocation, FVector& Direction);
 };
+
+template <typename ValueType>
+constexpr float UAlsMath::RemapAngleForCounterClockwiseRotation(const ValueType Angle)
+{
+	if (Angle > 180.0f - CounterClockwiseRotationAngleThreshold)
+	{
+		return Angle - 360.0f;
+	}
+
+	return Angle;
+}
 
 inline void FAlsSpringFloatState::Reset()
 {
@@ -173,11 +195,7 @@ inline float UAlsMath::LerpClamped(const float From, const float To, const float
 inline float UAlsMath::LerpAngle(const float From, const float To, const float Alpha)
 {
 	auto Delta{FRotator3f::NormalizeAxis(To - From)};
-
-	if (Delta > 180.0f - CounterClockwiseRotationAngleThreshold)
-	{
-		Delta -= 360.0f;
-	}
+	Delta = RemapAngleForCounterClockwiseRotation(Delta);
 
 	return FRotator3f::NormalizeAxis(From + Delta * Alpha);
 }
@@ -187,20 +205,9 @@ inline FRotator UAlsMath::LerpRotator(const FRotator& From, const FRotator& To, 
 	auto Result{To - From};
 	Result.Normalize();
 
-	if (Result.Pitch > 180.0f - CounterClockwiseRotationAngleThreshold)
-	{
-		Result.Pitch -= 360.0f;
-	}
-
-	if (Result.Yaw > 180.0f - CounterClockwiseRotationAngleThreshold)
-	{
-		Result.Yaw -= 360.0f;
-	}
-
-	if (Result.Roll > 180.0f - CounterClockwiseRotationAngleThreshold)
-	{
-		Result.Roll -= 360.0f;
-	}
+	Result.Pitch = RemapAngleForCounterClockwiseRotation(Result.Pitch);
+	Result.Yaw = RemapAngleForCounterClockwiseRotation(Result.Yaw);
+	Result.Roll = RemapAngleForCounterClockwiseRotation(Result.Roll);
 
 	Result *= Alpha;
 	Result += From;
@@ -289,11 +296,7 @@ inline float UAlsMath::InterpolateAngleConstant(const float Current, const float
 	}
 
 	auto Delta{FRotator3f::NormalizeAxis(Target - Current)};
-
-	if (Delta > 180.0f - CounterClockwiseRotationAngleThreshold)
-	{
-		Delta -= 360.0f;
-	}
+	Delta = RemapAngleForCounterClockwiseRotation(Delta);
 
 	const auto Alpha{InterpolationSpeed * DeltaTime};
 
