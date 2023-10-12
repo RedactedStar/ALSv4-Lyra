@@ -78,7 +78,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient)
 	FAlsMovementBaseState MovementBase;
 
-	// Replicated raw view rotation. In most cases, it's better to use FAlsViewState::Rotation to take advantage of network smoothing.
+	// Replicated raw view rotation. Depending on the context, this rotation can be in world space, or in movement
+	// base space. In most cases, it is better to use FAlsViewState::Rotation to take advantage of network smoothing.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient,
 		ReplicatedUsing = "OnReplicated_ReplicatedViewRotation")
 	FRotator ReplicatedViewRotation;
@@ -372,7 +373,7 @@ public:
 	virtual FRotator GetViewRotation() const override;
 
 private:
-	void SetReplicatedViewRotation(const FRotator& NewViewRotation);
+	void SetReplicatedViewRotation(const FRotator& NewViewRotation, bool bSendRpc);
 
 	UFUNCTION(Server, Unreliable)
 	void ServerSetReplicatedViewRotation(const FRotator& NewViewRotation);
@@ -381,7 +382,7 @@ private:
 	void OnReplicated_ReplicatedViewRotation();
 
 public:
-	void CorrectViewNetworkSmoothing(const FRotator& NewTargetRotation);
+	void CorrectViewNetworkSmoothing(const FRotator& NewTargetRotation, bool bRelativeTargetRotation);
 
 public:
 	const FAlsViewState& GetViewState() const;
