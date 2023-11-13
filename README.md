@@ -67,12 +67,19 @@ https://www.youtube.com/watch?v=l-zVg79OXcQ
  
  Also see the [Releases](https://github.com/Sixze/ALS-Refactored/releases) page for more details.     
 
+| Plugin Version                                                            | Unreal Engine Version           |
+|---------------------------------------------------------------------------|---------------------------------|
+| [4.13](https://github.com/Sixze/ALS-Refactored/releases/tag/4.13)         | 5.3                             |
+| [4.12](https://github.com/Sixze/ALS-Refactored/releases/tag/4.12)         | 5.2                             |
+| [4.11](https://github.com/Sixze/ALS-Refactored/releases/tag/4.11)         | 5.1                             |
+| [4.10](https://github.com/Sixze/ALS-Refactored/releases/tag/4.10) - 4.9   | 5.0                             |
+| [4.8](https://github.com/Sixze/ALS-Refactored/releases/tag/4.8) and below | 4.26, 4.27 and 5.0 Early Access |
+
  Reading the changelogs is a good way to keep up to date with all the latest features that the plugin has to offer.
 </details>
 
 <details>
  <summary>Sixze/ALS-Refactored - Versions & Platforms</summary>
-
   ## Supported Unreal Engine Versions & Platforms
  
  | Plugin Version                                                            | Unreal Engine Version           |
@@ -92,7 +99,6 @@ https://www.youtube.com/watch?v=l-zVg79OXcQ
  ## Known Issues & Discussion
   - See [Issues](https://github.com/Sixze/ALS-Refactored/issues) section for list of known issues.
   - See [Discussions](https://github.com/Sixze/ALS-Refactored/discussions) section to discuss anything about the plugin, and ask questions. Please do not open an issue for questions.
-
 </details>
 
 <details open>

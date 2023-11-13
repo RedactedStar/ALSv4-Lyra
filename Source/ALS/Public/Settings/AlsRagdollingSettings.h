@@ -31,7 +31,7 @@ public:
 	// after activation. This hack is used to prevent the ragdoll from getting a very high initial speed
 	// at unstable FPS, which can be reproduced by jumping and activating the ragdoll at the same time.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
-	bool bLimitInitialRagdollSpeed{false};
+	bool bLimitInitialRagdollSpeed{true};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
 	TEnumAsByte<ECollisionChannel> GroundTraceChannel{ECC_Visibility};
@@ -39,7 +39,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
 	TArray<TEnumAsByte<ECollisionChannel>> GroundTraceResponseChannels;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS", AdvancedDisplay)
 	FCollisionResponseContainer GroundTraceResponses{ECR_Ignore};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")

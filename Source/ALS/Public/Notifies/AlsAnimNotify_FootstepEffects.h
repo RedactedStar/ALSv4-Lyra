@@ -6,6 +6,7 @@
 #include "AlsAnimNotify_FootstepEffects.generated.h"
 
 enum EPhysicalSurface : int;
+struct FHitResult;
 class USoundBase;
 class UMaterialInterface;
 class UNiagaraSystem;
@@ -51,6 +52,7 @@ struct ALS_API FAlsFootstepEffectSettings
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
 	TSoftObjectPtr<USoundBase> Sound;
 
@@ -76,10 +78,16 @@ struct ALS_API FAlsFootstepEffectSettings
 	FVector3f DecalLocationOffset{0.0f, -10.0f, -1.75f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
-	FRotator3f DecalFootLeftRotationOffset{90.0f, -90.0f, 180.0f};
+	FRotator3f DecalFootLeftRotationOffset{90.0f, 0.0f, 90.0f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
-	FRotator3f DecalFootRightRotationOffset{-90.0f, 90.0f, 0.0f};
+	FRotator3f DecalFootRightRotationOffset{-90.0f, 0.0f, -90.0f};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS", AdvancedDisplay)
+	FQuat4f DecalFootLeftRotationOffsetQuaternion{ForceInit};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS", AdvancedDisplay)
+	FQuat4f DecalFootRightRotationOffsetQuaternion{ForceInit};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
 	TSoftObjectPtr<UNiagaraSystem> ParticleSystem;
@@ -95,6 +103,17 @@ struct ALS_API FAlsFootstepEffectSettings
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
 	FRotator3f ParticleSystemFootRightRotationOffset{ForceInit};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS", AdvancedDisplay)
+	FQuat4f ParticleSystemFootLeftRotationOffsetQuaternion{ForceInit};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS", AdvancedDisplay)
+	FQuat4f ParticleSystemFootRightRotationOffsetQuaternion{ForceInit};
+
+public:
+#if WITH_EDITOR
+	void PostEditChangeProperty(const FPropertyChangedEvent& PropertyChangedEvent);
+#endif
 };
 
 UCLASS(Blueprintable, BlueprintType)
@@ -121,8 +140,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", DisplayName = "Foot Right Z Axis")
 	FVector3f FootRightZAxis{-1.0f, 0.0f, 0.0f};
 
+	// Prevents footstep decals from spawning if the angle between the foot's Z axis and the surface normal exceeds this value.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = 0, ClampMax = 90, ForceUnits = "deg"))
+	float DecalSpawnAngleThreshold{35.0f};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Settings", AdvancedDisplay, Meta = (ClampMin = 0, ClampMax = 1))
+	float DecalSpawnAngleThresholdCos{FMath::Cos(FMath::DegreesToRadians(35.0f))};
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", Meta = (ForceInlineRow))
 	TMap<TEnumAsByte<EPhysicalSurface>, FAlsFootstepEffectSettings> Effects;
+
+public:
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 };
 
 UCLASS(DisplayName = "Als Footstep Effects Animation Notify",
@@ -167,4 +198,15 @@ public:
 
 	virtual void Notify(USkeletalMeshComponent* Mesh, UAnimSequenceBase* Animation,
 	                    const FAnimNotifyEventReference& EventReference) override;
+
+private:
+	void SpawnSound(USkeletalMeshComponent* Mesh, const FAlsFootstepEffectSettings& EffectSettings,
+	                const FVector& FootstepLocation, const FQuat& FootstepRotation) const;
+
+	void SpawnDecal(USkeletalMeshComponent* Mesh, const FAlsFootstepEffectSettings& EffectSettings,
+	                const FVector& FootstepLocation, const FQuat& FootstepRotation,
+	                const FHitResult& FootstepHit, const FVector& FootZAxis) const;
+
+	void SpawnParticleSystem(USkeletalMeshComponent* Mesh, const FAlsFootstepEffectSettings& EffectSettings,
+	                         const FVector& FootstepLocation, const FQuat& FootstepRotation) const;
 };

@@ -80,6 +80,9 @@ struct ALS_API FAlsMantlingTraceSettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS", Meta = (ClampMin = 0, ForceUnits = "cm"))
 	float TargetLocationOffset{15.0f};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS", Meta = (ClampMin = 0, ForceUnits = "cm"))
+	float StartLocationOffset{55.0f};
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS", Meta = (ClampMin = 0))
 	bool bDrawFailedTraces{false};
 };
@@ -98,6 +101,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS", Meta = (ClampMin = 0, ClampMax = 180, ForceUnits = "deg"))
 	float MaxReachAngle{50.0f};
+
+	// Prevents mantling on surfaces whose slope angle exceeds this value.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS", Meta = (ClampMin = 0, ClampMax = 90, ForceUnits = "deg"))
+	float SlopeAngleThreshold{35.0f};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS", AdvancedDisplay, Meta = (ClampMin = 0, ClampMax = 1))
+	float SlopeAngleThresholdCos{FMath::Cos(FMath::DegreesToRadians(35.0f))};
 
 	// If a dynamic object has a speed bigger than this value, then do not start mantling.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS", Meta = (ForceUnits = "cm/s"))
@@ -118,7 +128,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ALS")
 	TArray<TEnumAsByte<ECollisionChannel>> MantlingTraceResponseChannels;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ALS", AdvancedDisplay)
 	FCollisionResponseContainer MantlingTraceResponses{ECR_Ignore};
 
 	// Used when the mantling was interrupted and we need to stop the animation.

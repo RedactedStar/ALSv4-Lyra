@@ -78,7 +78,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient)
 	FAlsMovementBaseState MovementBase;
 
-	// Replicated raw view rotation. In most cases, it's better to use FAlsViewState::Rotation to take advantage of network smoothing.
+	// Replicated raw view rotation. Depending on the context, this rotation can be in world space, or in movement
+	// base space. In most cases, it is better to use FAlsViewState::Rotation to take advantage of network smoothing.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient,
 		ReplicatedUsing = "OnReplicated_ReplicatedViewRotation")
 	FRotator ReplicatedViewRotation;
@@ -103,7 +104,7 @@ protected:
 	FAlsMantlingState MantlingState;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient, Replicated)
-	FVector_NetQuantize100 RagdollTargetLocation;
+	FVector_NetQuantize RagdollTargetLocation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient)
 	FAlsRagdollingState RagdollingState;
@@ -126,6 +127,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void PreRegisterAllComponents() override;
+
+	virtual void PostRegisterAllComponents() override;
 
 	virtual void PostInitializeComponents() override;
 
@@ -372,7 +375,7 @@ public:
 	virtual FRotator GetViewRotation() const override;
 
 private:
-	void SetReplicatedViewRotation(const FRotator& NewViewRotation);
+	void SetReplicatedViewRotation(const FRotator& NewViewRotation, bool bSendRpc);
 
 	UFUNCTION(Server, Unreliable)
 	void ServerSetReplicatedViewRotation(const FRotator& NewViewRotation);
@@ -381,7 +384,7 @@ private:
 	void OnReplicated_ReplicatedViewRotation();
 
 public:
-	void CorrectViewNetworkSmoothing(const FRotator& NewTargetRotation);
+	void CorrectViewNetworkSmoothing(const FRotator& NewTargetRotation, bool bRelativeTargetRotation);
 
 public:
 	const FAlsViewState& GetViewState() const;
@@ -533,6 +536,8 @@ protected:
 	// Ragdolling
 
 public:
+	const FAlsRagdollingState& GetRagdollingState() const;
+
 	bool IsRagdollingAllowedToStart() const;
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|Character")
@@ -566,12 +571,9 @@ private:
 
 	void StopRagdollingImplementation();
 
-public:
-	void FinalizeRagdolling();
-
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Als Character")
-	UAnimMontage* SelectGetUpMontage(bool bRagdollFacedUpward);
+	UAnimMontage* SelectGetUpMontage(bool bRagdollFacingUpward);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Als Character")
 	void OnRagdollingEnded();
@@ -580,11 +582,13 @@ private:
 	void SetRagdollTargetLocation(const FVector& NewTargetLocation);
 
 	UFUNCTION(Server, Unreliable)
-	void ServerSetRagdollTargetLocation(const FVector_NetQuantize100& NewTargetLocation);
+	void ServerSetRagdollTargetLocation(const FVector_NetQuantize& NewTargetLocation);
 
 	void RefreshRagdolling(float DeltaTime);
 
-	void RefreshRagdollingActorTransform(float DeltaTime);
+	FVector RagdollTraceGround(bool& bGrounded) const;
+
+	void LimitRagdollSpeed() const;
 
 	// Debug
 
@@ -675,3 +679,9 @@ inline const FAlsLocomotionState& AAlsCharacter::GetLocomotionState() const
 {
 	return LocomotionState;
 }
+
+inline const FAlsRagdollingState& AAlsCharacter::GetRagdollingState() const
+{
+	return RagdollingState;
+}
+

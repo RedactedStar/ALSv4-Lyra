@@ -19,6 +19,7 @@
 #include "Utility/AlsGameplayTags.h"
 #include "AlsAnimationInstance.generated.h"
 
+struct FAlsFootLimitsSettings;
 class UAlsLinkedAnimationInstance;
 class AAlsCharacter;
 
@@ -68,7 +69,7 @@ protected:
 	FGameplayTag Gait{AlsGaitTags::Walking};
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State", Transient)
-	FGameplayTag OverlayMode;
+	FGameplayTag OverlayMode{AlsOverlayModeTags::Default};
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State", Transient)
 	FGameplayTag LocomotionAction;
@@ -247,7 +248,7 @@ private:
 	void RefreshFeet(float DeltaTime);
 
 	void RefreshFoot(FAlsFootState& FootState, const FName& FootIkCurveName, const FName& FootLockCurveName,
-	                 const FTransform& ComponentTransformInverse, float DeltaTime) const;
+	                 const FAlsFootLimitsSettings& LimitsSettings, const FTransform& ComponentTransformInverse, float DeltaTime) const;
 
 	void ProcessFootLockTeleport(FAlsFootState& FootState) const;
 
@@ -257,6 +258,8 @@ private:
 	                     float DeltaTime, FVector& FinalLocation, FQuat& FinalRotation) const;
 
 	void RefreshFootOffset(FAlsFootState& FootState, float DeltaTime, FVector& FinalLocation, FQuat& FinalRotation) const;
+
+	void LimitFootRotation(const FAlsFootLimitsSettings& LimitsSettings, const FQuat& ParentRotation, FQuat& Rotation) const;
 
 	// Transitions
 
@@ -312,7 +315,7 @@ private:
 	void RefreshRagdollingOnGameThread();
 
 public:
-	void StopRagdolling();
+	FPoseSnapshot& SnapshotFinalRagdollPose();
 
 	// Utility
 
