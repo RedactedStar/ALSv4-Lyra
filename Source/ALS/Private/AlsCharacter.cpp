@@ -1076,9 +1076,6 @@ void AAlsCharacter::SetOverlayMode(const FGameplayTag& NewOverlayMode, const boo
 		else
 		{
 			ServerSetOverlayMode(OverlayMode);
-		} else if (GetLocalRole() == ROLE_Authority)
-		{
-			ClientSetOverlayMode(OverlayMode);
 		}
 	}
 }

@@ -15,6 +15,7 @@
 #include "Engine/NetConnection.h"
 #include "Engine/SkeletalMesh.h"
 #include "Net/Core/PushModel/PushModel.h"
+#include "Player/LyraPlayerController.h"
 #include "RootMotionSources/AlsRootMotionSource_Mantling.h"
 #include "Settings/AlsCharacterSettings.h"
 #include "Utility/AlsConstants.h"
@@ -104,7 +105,7 @@ void AAlsCharacter::StartRollingImplementation(UAnimMontage* Montage, const floa
 		{
 			RollingState.TargetYawAngle = TargetYawAngle;
 
-			RefreshRotationInstant(StartYawAngle);
+			RefreshRotationInstant(InitialYawAngle);
 		}
 	}
 }
@@ -971,7 +972,7 @@ void AAlsCharacter::LimitRagdollSpeed() const
 
 bool AAlsCharacter::IsRagdollingAllowedToStop() const
 {
-	return LocomotionAction == AlsLocomotionActionTags::Ragdolling && RagdollingState.bGrounded;
+	return LocomotionAction == AlsLocomotionActionTags::Ragdolling && RagdollingState.Grounded;
 }
 
 bool AAlsCharacter::StopRagdolling()
@@ -1031,9 +1032,8 @@ void AAlsCharacter::StopRagdollingImplementation()
 
 	GetCharacterMovement()->NetworkSmoothingMode = ENetworkSmoothingMode::Exponential;
 	GetCharacterMovement()->bIgnoreClientMovementErrorChecksAndCorrection = false;
-
-	bool bGrounded;
-	const auto NewActorLocation{RagdollTraceGround(bGrounded)};
+	
+	const auto NewActorLocation{RagdollTraceGround(RagdollingState.Grounded)};
 
 	// Determine whether the ragdoll is facing upward or downward and set the actor rotation accordingly.
 
@@ -1085,7 +1085,7 @@ void AAlsCharacter::StopRagdollingImplementation()
 
 	AlsCharacterMovement->SetMovementModeLocked(false);
 
-	if (bGrounded)
+	if (RagdollingState.Grounded)
 	{
 		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	}
@@ -1099,7 +1099,7 @@ void AAlsCharacter::StopRagdollingImplementation()
 
 	OnRagdollEnded.Broadcast();
 	
-	if (bGrounded &&
+	if (RagdollingState.Grounded &&
 	    GetMesh()->GetAnimInstance()->Montage_Play(SelectGetUpMontage(bRagdollFacingUpward), 1.0f,
 	                                               EMontagePlayReturnType::MontageLength, 0.0f, true))
 	{
@@ -1108,7 +1108,9 @@ void AAlsCharacter::StopRagdollingImplementation()
 		SetLocomotionAction(AlsLocomotionActionTags::GettingUp);
 
 		// Re-equip active slot - casting hell...
-		if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+		// TODO: Fix with Activate Ability
+		// @Game-Change - Start
+		if (const ALyraPlayerController* PlayerController = Cast<ALyraPlayerController>(GetController()))
 		{
 			UActorComponent* FoundComponent = PlayerController->FindComponentByClass(ULyraQuickBarComponent::StaticClass());
 			if (ULyraQuickBarComponent* QuickBar = Cast<ULyraQuickBarComponent>(FoundComponent))
@@ -1116,6 +1118,7 @@ void AAlsCharacter::StopRagdollingImplementation()
 				QuickBar->SetLastActiveSlot();
 			}
 		}
+		// @Game-Change - End
 	}
 }
 
